@@ -86,9 +86,16 @@ contract Escrow {
         require(approval[_nftID][seller]);
         address(this).balance >= purchasePrice[_nftID];
 
+        isListed[_nftID] = false;
+
         (bool success,) = payable(seller).call{value: address(this).balance}("");
         require(success);
 
         IERC721(nftAddress).transferFrom(address(this),buyer[_nftID], _nftID);
+    }
+
+    function cancelSale(uint _nftID) public onlySeller {
+        const response = IERC721(nftAddress).transferFrom(address(this), seller, _nftID);
+        console.log(response, "Is the sale is not approved then cancel the request and return the token back to the original buyer");
     }
 }

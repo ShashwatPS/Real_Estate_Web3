@@ -21,6 +21,12 @@ describe('Escrow', () => {
 
         const Escrow =  await ethers.getContractFactory('Escrow');
         escrow = await Escrow.deploy(realEstate.address, seller.address, inspector.address, lender.address);
+
+        transaction = await realEstate.connect(seller).approve(escrow.address, 1);
+        await transaction.wait();
+
+        transaction = await escrow.connect(seller).list(1 );
+        await transaction.wait();
     })
 
     describe('Deployment', () => {
@@ -46,4 +52,13 @@ describe('Escrow', () => {
         })
 
     })
+
+    describe('Listing', () => {
+
+        it('Updates Owenrship', async () => {
+            expect(await realEstate.ownerOf(1)).to.equal(escrow.address);
+        })
+
+    })
+
 });
